@@ -38,12 +38,6 @@ _(nenhum no momento)_
 - **Risco:** se mudar sem pensar, todo visitante recorrente vê banner de novo (atrito).
 - **Mitigação:** só incrementar versão quando o texto for materialmente diferente. Registrar mudança como `Decision` no changelog explicando o motivo.
 
-### DP6. Tratamento de bots — `parcial`
-- Crawlers e bots hidratam `tracking_sessions` ruidosas.
-- **Feito:** o backend detecta bot por User-Agent na ingestão e grava `tracking_sessions.is_bot`.
-- **Pendente:** o `AnalyticsService` (Fase 4) **ainda não filtra** `is_bot` nas agregações — o dashboard inclui sessões de bot. Adicionar `WHERE is_bot = false` (e o subquery equivalente nas queries de evento) é o próximo passo. Baixo impacto enquanto o tráfego é pequeno; resolver antes de escalar.
-- **Ação:** filtrar bots no `AnalyticsService` numa próxima iteração da Fase 4.
-
 ---
 
 ## 🟡 Riscos técnicos identificados
@@ -139,6 +133,9 @@ _(nenhum no momento)_
 
 ### DP1 → CSS, não recharts `2026-05-20`
 Biblioteca de gráficos do dashboard: decidido **gráficos em CSS** (barras), sem lib externa — consistente com o painel admin existente (`dashboard`/`custos`). Ver `CHANGELOG-TRACKING.md` 2026-05-20 (Decision Fase 4).
+
+### DP6 → bots excluídos das agregações `2026-05-20`
+O backend já detectava bot na ingestão (`tracking_sessions.is_bot`); agora o `AnalyticsService` **exclui sessões/eventos de bot** de todas as agregações (subquery `is_bot = false`). Leads não têm flag de bot — mantidos (bot não preenche formulário). Verificado com seed contendo 146 bots: overview e funil contam só os ~649 humanos. Ver `CHANGELOG-TRACKING.md` 2026-05-20.
 
 > Quando um item daqui for resolvido, **mova para esta seção** com:
 > - referência ao item original (ex.: `DP1 → recharts`),

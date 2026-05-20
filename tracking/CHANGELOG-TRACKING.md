@@ -29,6 +29,12 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Fixed (DP6 — bots excluídos das agregações)
+**Fase/Item:** Fase 4 / refinamento · resolve DP6
+**Resumo:** O `AnalyticsService` passou a **excluir sessões e eventos de bot** de todas as agregações (overview, timeseries, funil, atribuição). Subquery `session_id IN (SELECT ... WHERE is_bot = false)` nas queries de evento; `is_bot = false` direto nas de sessão. Leads ficam de fora do filtro (não têm flag; bot não preenche formulário).
+**Validação:** seed atualizado para incluir ~146 sessões de bot (UA Googlebot/bingbot, só `page_view`). Antes do fix o overview contava 775 sessões; depois, ~632 (humanos no período) — funil topo 649. Confirmado que os 146 bots saem das métricas.
+**Arquivos:** `analytics.service.ts`, `prisma/seed-tracking.ts`.
+
 ## 2026-05-20 — Added (Fase 4 CONCLUÍDA — dashboard de analytics)
 **Fase/Item:** Fase 4 inteira
 **Resumo:** Área `(admin)/analytics` no `seo-blog-frontend` + endpoints `/admin/analytics` no backend. Dashboard funcional, validado com seed de 30 dias e smoke no browser.
