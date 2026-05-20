@@ -29,6 +29,25 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Added (Fase 2 — client de tracking na LP piloto)
+**Fase/Item:** Fase 2 (código; falta a validação E2E para fechar)
+**Resumo:** `lib/tracking/` criada na `health-voice-institutional-v2` e integrada. A LP envia sessão, `page_view`, `cta_click`, `form_view`/`form_submit`/`form_error` e `lead_created` ao hub.
+**Branch:** `feat/tracking-hub-integration`.
+**`src/lib/tracking/`:** `client.ts` (singleton: batch 4s, retry, flush no unload), `session.ts` (anonymousId localStorage + sessionId sessionStorage TTL 30min), `attribution.ts` (UTM/gclid/fbclid), `consent.ts`, `events.ts` (catálogo type-safe), `provider.tsx` (`<TrackingProvider>` + page_view automático), `hooks.ts` (`useTracking()`), `components/TrackedButton.tsx`.
+**Integração:** `<TrackingProvider>` no `layout.tsx`; GTM movido de hardcoded para `NEXT_PUBLIC_GTM_ID` (condicional, segue ativo); CTAs da `campaing1` disparam `cta_click`; `CampaignLeadModal` dispara `form_*` + `lead_created` e envia o lead ao hub via `client.lead()` em paralelo à API Supabase existente; `pushLeadWebClick` removido. Env vars adicionadas aos 3 arquivos `.env*`.
+**Build:** `yarn build` da LP passou.
+**Pendente:** validação E2E (playwright-mcp) — fecha a fase.
+
+## 2026-05-20 — Decision (Fase 2)
+**Fase/Item:** Fase 2 / client
+**Resumo:** O client usa `fetch(..., { keepalive: true })` para o envio no unload — **não** `navigator.sendBeacon`.
+**Motivo:** `sendBeacon` não permite definir headers, e o backend exige `X-Site-Key` no header. `fetch` com `keepalive` cobre o mesmo caso (sobreviver ao unload) e aceita headers. O suporte a `text/plain` no backend permanece (defensivo/futuro), mas o client da LP envia `application/json`.
+
+## 2026-05-20 — Decision (Fase 2)
+**Fase/Item:** Fase 2 / consentimento
+**Resumo:** Na Fase 2 o `consent.ts` tem default `granted` — o tracking roda sem banner, igual ao comportamento atual da LP com o GTM.
+**Motivo:** O gating real (banner + buffer + default `pending`) é escopo da Fase 3. A infraestrutura de consentimento já existe no módulo para a Fase 3 só plugar a UI.
+
 ## 2026-05-20 — Added (Fase 1 concluída — backend de ingestão)
 **Fase/Item:** Fase 1 inteira
 **Resumo:** Schema Prisma + módulo `tracking` no `seo-blog-backend`. Ingestão funcional e validada.

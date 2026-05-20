@@ -92,15 +92,15 @@
 
 **Objetivo:** a Health Voice manda `page_view`, `cta_click`, `form_submit` e `lead_created` para o nosso backend; o GTM continua rodando em paralelo.
 
-- [ ] Criar `src/lib/tracking/` na `health-voice-institutional-v2` seguindo [`ARQUITETURA-TRACKING.md§4`](./ARQUITETURA-TRACKING.md)
-- [ ] Env vars: `NEXT_PUBLIC_TRACKING_ENDPOINT`, `NEXT_PUBLIC_TRACKING_SITE_KEY`
-- [ ] `TrackingProvider` no `app/layout.tsx` (root)
-- [ ] `useAutoPageView()` no layout que detecta mudança de pathname (Next App Router) e dispara `page_view`
-- [ ] Refatorar `CTA_BUTTON_IDS` para o catálogo: cada CTA dispara `cta_click` com `elementId` padronizado
-- [ ] Refatorar `CampaignLeadModal` → ao submeter, dispara `form_submit` e (após resposta da API) `lead_created`
-- [ ] Mover GTM ID hardcoded de `layout.tsx:157` para env var `NEXT_PUBLIC_GTM_ID` (mantém GTM funcionando)
-- [ ] Substituir `pushLeadWebClick` cru por `track('cta_click', ...)` do nosso client (que internamente também faz `dataLayer.push`)
-- [ ] **Validação E2E automatizada (playwright-mcp)** — ver §Validação E2E abaixo
+- [x] Criar `src/lib/tracking/` na `health-voice-institutional-v2` (client, session, attribution, consent, events, provider, hooks, TrackedButton)
+- [x] Env vars: `NEXT_PUBLIC_TRACKING_ENDPOINT`, `NEXT_PUBLIC_TRACKING_SITE_KEY`, `NEXT_PUBLIC_TRACKING_CONSENT_VERSION`, `NEXT_PUBLIC_GTM_ID`
+- [x] `TrackingProvider` no `app/layout.tsx` (root)
+- [x] page_view automático em mudança de rota — feito dentro do `TrackingProvider` via `usePathname()`
+- [x] Refatorar CTAs da `campaing1`: `openModal`/`scrollToOferta` disparam `cta_click` com `elementId` padronizado
+- [x] Refatorar `CampaignLeadModal` → `form_view` ao abrir, `form_submit` ao enviar, `form_error` em falha, `lead_created` após `client.lead()`
+- [x] Mover GTM ID hardcoded para env var `NEXT_PUBLIC_GTM_ID` (GTM segue funcionando, agora condicional)
+- [x] Substituir `pushLeadWebClick` cru por `track('cta_click', ...)` (o client também espelha no `dataLayer`)
+- [ ] **Validação E2E automatizada (playwright-mcp)** — ver §Validação E2E abaixo (fecha a fase)
 
 ### Validação E2E automatizada (playwright-mcp)
 
