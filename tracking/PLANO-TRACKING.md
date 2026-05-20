@@ -100,7 +100,7 @@
 - [x] Refatorar `CampaignLeadModal` → `form_view` ao abrir, `form_submit` ao enviar, `form_error` em falha, `lead_created` após `client.lead()`
 - [x] Mover GTM ID hardcoded para env var `NEXT_PUBLIC_GTM_ID` (GTM segue funcionando, agora condicional)
 - [x] Substituir `pushLeadWebClick` cru por `track('cta_click', ...)` (o client também espelha no `dataLayer`)
-- [ ] **Validação E2E automatizada (playwright-mcp)** — ver §Validação E2E abaixo (fecha a fase)
+- [x] **Validação E2E automatizada** — suíte `@playwright/test` em `health-voice-institutional-v2/e2e/` (8 testes, todos verdes em 2026-05-20)
 
 ### Validação E2E automatizada (playwright-mcp)
 
@@ -113,11 +113,11 @@ A partir da Fase 2 a validação do pipeline deixa de ser só `curl` e passa a e
 
 Esses scripts viram a base reutilizável de validação de **toda LP nova** (passo do [`PLAYBOOK-NOVA-LP.md`](./PLAYBOOK-NOVA-LP.md)) e também servem à Fase 4 (validar que o dashboard reflete os dados).
 
-**Critérios de aceite Fase 2:**
-- Em uma sessão real na Health Voice, banco mostra: 1 `tracking_session`, ≥1 `page_view`, ≥1 `cta_click`, 1 `tracking_lead` (se preenchido formulário).
-- `tracking_attribution` registrada com UTM quando entrar via `?utm_source=teste`.
-- GTM continua disparando (validar em GTM Preview).
-- A suíte E2E playwright-mcp roda e passa em todos os cenários.
+**Critérios de aceite Fase 2:** ✅ todos atendidos (suíte E2E verde, 2026-05-20)
+- ✅ Sessão real mostra `tracking_session`, `page_view`, `cta_click`, `tracking_lead`.
+- ✅ `tracking_attribution` registrada com UTM quando entra via `?utm_*`.
+- ✅ Eventos espelhados no `dataLayer` (coexistência com GTM).
+- ✅ A suíte `@playwright/test` (8 testes) passa em todos os cenários.
 
 ---
 

@@ -29,8 +29,16 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Added (Fase 2 CONCLUÍDA — suíte E2E verde)
+**Fase/Item:** Fase 2 / validação E2E
+**Resumo:** Suíte `@playwright/test` criada na LP (`health-voice-institutional-v2/e2e/`) — **8 testes, todos verdes**. Fase 2 fechada.
+**Cobertura:** `tracking_session` (device + ipHash), `page_view` no load e na navegação, espelho no `dataLayer`, `cta_click` com `elementId`, fluxo de lead completo (`form_view`/`form_submit`/`lead_created` + `tracking_lead`, com a API Supabase mockada), atribuição UTM, idempotência de `eventId`, e `X-Site-Key` inválida → 401.
+**Infra:** `playwright.config.ts` (sobe LP + backend via `webServer`), `e2e/global-setup.ts` (checa backend, habilita tracking no site), helpers `db.ts` (asserções no Postgres) e `tracking.ts`. Scripts `test:e2e` no `package.json`. Plano em [`PLANO-TESTES-E2E.md`](./PLANO-TESTES-E2E.md).
+**Achado da suíte:** `tracking_lead.phone` é gravado com máscara — registrado como débito [R11](./PONTOS-ATENCAO-TRACKING.md).
+**Próximo passo:** Fase 3 — banner de consentimento LGPD + gating.
+
 ## 2026-05-20 — Added (Fase 2 — client de tracking na LP piloto)
-**Fase/Item:** Fase 2 (código; falta a validação E2E para fechar)
+**Fase/Item:** Fase 2 (código)
 **Resumo:** `lib/tracking/` criada na `health-voice-institutional-v2` e integrada. A LP envia sessão, `page_view`, `cta_click`, `form_view`/`form_submit`/`form_error` e `lead_created` ao hub.
 **Branch:** `feat/tracking-hub-integration`.
 **`src/lib/tracking/`:** `client.ts` (singleton: batch 4s, retry, flush no unload), `session.ts` (anonymousId localStorage + sessionId sessionStorage TTL 30min), `attribution.ts` (UTM/gclid/fbclid), `consent.ts`, `events.ts` (catálogo type-safe), `provider.tsx` (`<TrackingProvider>` + page_view automático), `hooks.ts` (`useTracking()`), `components/TrackedButton.tsx`.

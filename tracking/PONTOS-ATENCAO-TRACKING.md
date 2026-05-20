@@ -99,6 +99,11 @@ _(nenhum no momento)_
 - Se `event` chega antes da sessão estar persistida, FK quebra.
 - **Mitigação:** `tracking_event` referencia `sessionId` por valor (não por id da row); upsert da sessão acontece no service para ambos os endpoints.
 
+### R11. `tracking_lead.phone` é gravado com máscara `[débito]`
+- A `CampaignLeadModal` envia o telefone formatado (`(41) 99999-8888`) — comportamento pré-existente da LP. O backend (`ingestLead`) grava como recebido.
+- **Impacto:** o `dedupeHash` de lead inclui o phone; máscara inconsistente entre LPs enfraqueceria o dedup. Hoje só a Health Voice envia lead, então não há divergência — mas é frágil.
+- **Mitigação proposta:** normalizar o phone para dígitos no `TrackingService.ingestLead` (`phone.replace(/\D/g,'')`) antes de gravar e de calcular o hash. Pequeno, sem migration. Fazer junto da próxima mexida no backend (descoberto pela suíte E2E da Fase 2).
+
 ---
 
 ## 🟢 Dúvidas em aberto (não bloqueiam, mas precisam de resposta antes da fase respectiva)

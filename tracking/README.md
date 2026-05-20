@@ -43,6 +43,7 @@ Transformar o `seo-blog` no **hub central de tracking, atribuição e analytics*
 | [`PLAYBOOK-NOVA-LP.md`](./PLAYBOOK-NOVA-LP.md) | Passo-a-passo para integrar tracking em LP nova | Quando o procedimento mudar |
 | [`CATALOGO-EVENTOS.md`](./CATALOGO-EVENTOS.md) | Eventos canônicos, payload, convenções | A cada evento novo |
 | [`LICOES-LPS-EXISTENTES.md`](./LICOES-LPS-EXISTENTES.md) | Auditoria das LPs existentes: o que portar e os anti-padrões AP1–AP11 | Quando nova auditoria revelar algo |
+| [`PLANO-TESTES-E2E.md`](./PLANO-TESTES-E2E.md) | Plano da suíte E2E (Playwright) que valida o pipeline de tracking | Quando cenários ou procedimento mudarem |
 | [`CHANGELOG-TRACKING.md`](./CHANGELOG-TRACKING.md) | Histórico de entregas e decisões | A cada entrega/decisão |
 | [`PONTOS-ATENCAO-TRACKING.md`](./PONTOS-ATENCAO-TRACKING.md) | Riscos, dúvidas, débitos técnicos | A cada novo bloqueio ou risco |
 
@@ -56,8 +57,8 @@ Transformar o `seo-blog` no **hub central de tracking, atribuição e analytics*
 |---|---|---|
 | 0 | Planejamento + skills/agents | ✅ Concluída |
 | 1 | Schema Prisma + módulo `tracking` no backend | ✅ Concluída (resta e2e automatizado) |
-| 2 | Cliente `lib/tracking` na LP Health Voice (piloto) | ⬜ Pendente (próxima) |
-| 3 | Banner de consentimento LGPD + gating | ⬜ Pendente |
+| 2 | Cliente `lib/tracking` na LP Health Voice (piloto) | ✅ Concluída |
+| 3 | Banner de consentimento LGPD + gating | ⬜ Pendente (próxima) |
 | 4 | Dashboard de analytics no `seo-blog-frontend` | ⬜ Pendente |
 | 5 | Playbook validado em segunda LP | ⬜ Pendente |
 | 6 | Funil, atribuição multi-touch, coortes | ⬜ Pendente |
