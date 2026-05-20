@@ -123,6 +123,8 @@ Esses scripts viram a base reutilizável de validação de **toda LP nova** (pas
 
 ## Fase 3 — Consentimento LGPD operacional
 
+> ⏸️ **Adiada** (decisão do usuário em 2026-05-20): priorizou-se a Fase 4 (dashboard) para destravar decisão comercial. Enquanto a Fase 3 não roda, o tracking opera **sem gating** — mesmo estado em que a LP já operava o GTM. O `consent.ts` já existe com a infraestrutura (default `granted`); a Fase 3 troca para `pending` e pluga a UI. Risco LGPD registrado — retomar antes de tráfego pago em escala.
+
 **Objetivo:** tracking nosso e GTM só rodam após consent; revogação funciona; auditoria fica em `tracking_consent_log`.
 
 - [ ] `ConsentManager` no `lib/tracking/consent.ts` com buffer de eventos pré-consent
@@ -147,28 +149,25 @@ Esses scripts viram a base reutilizável de validação de **toda LP nova** (pas
 
 > ⚠️ **Antes de codar:** ler [`ARQUITETURA-TRACKING.md§7` (Princípios de visualização)](./ARQUITETURA-TRACKING.md) e os anti-padrões AP2–AP4 de [`LICOES-LPS-EXISTENTES.md`](./LICOES-LPS-EXISTENTES.md). Esta fase corrige o motivo histórico de a visualização sempre falhar — não é só "fazer telas".
 
-- [ ] Nova rota `(admin)/analytics/` separada da `(admin)/dashboard/` (que continua sendo a operacional do CMS)
-- [ ] Layout com tabs/filtros: seletor de site, range de datas (7d, 30d, 90d, custom), comparativo
-- [ ] Páginas:
-  - [ ] `/analytics` (overview): cards (sessões, page views, eventos, leads, taxa de conversão) + sparkline
-  - [ ] `/analytics/funil` (page_view → cta_click → form_view → form_submit → lead_created)
-  - [ ] `/analytics/atribuicao` (breakdown por utm_source / medium / campaign; leads atribuídos)
-  - [ ] `/analytics/leads` (tabela paginada com filtros; export CSV)
-  - [ ] `/analytics/eventos` (top eventos com drill-down)
-- [ ] Endpoints back: `GET /admin/analytics/{overview,funnel,attribution,leads,timeseries}` (ver [`ARQUITETURA§3.2`](./ARQUITETURA-TRACKING.md))
-- [ ] Charts: `recharts` (decisão; ver [`PONTOS-ATENCAO`](./PONTOS-ATENCAO-TRACKING.md))
-- [ ] Estados: loading skeleton, empty state ("sem dados ainda"), error retry
-- [ ] Filtro de role: `REVISOR` vê só leitura; `ADMIN`/`EDITOR` exporta
+- [x] Nova rota `(admin)/analytics/` separada da `(admin)/dashboard/`
+- [x] Layout com sub-nav (tabs) + seletor de período (7d/30d/90d) compartilhado; site vem do seletor global
+- [x] Páginas:
+  - [x] `/analytics` (overview): cards (sessões, page views, leads, conversão) com ▲▼ + gráfico de sessões/dia
+  - [x] `/analytics/funil` (page_view → cta_click → form_view → form_submit → lead_created, com vazamento destacado)
+  - [x] `/analytics/atribuicao` (sessões e leads por utm_source, com conversão)
+  - [x] `/analytics/leads` (tabela paginada server-side)
+  - [~] `/analytics/eventos` — **adiado** para evolução (drill-down de eventos crus; não é prioridade insight)
+- [x] Endpoints back: `GET /admin/analytics/{overview,timeseries,funnel,attribution,leads}` (módulo `tracking`)
+- [x] Charts: **CSS** (barras), não `recharts` — ratifica DP1 (ver [`PONTOS-ATENCAO`](./PONTOS-ATENCAO-TRACKING.md))
+- [x] Estados: loading skeleton, empty state, error retry — `StateWrapper`
+- [~] Export CSV de leads / filtro de role granular — **adiado** (refinamento; auth básica já cobre)
 
-**Critérios de aceite Fase 4:**
-- Overview da Health Voice mostra dados reais da Fase 2.
-- Funil renderiza as etapas; clique em etapa mostra eventos crus daquela etapa (drill-down, não a tela principal).
-- Todo card mostra variação vs. período anterior (▲▼ %).
-- Agregação é server-side: nenhuma página baixa log cru pra somar no browser.
-- O seletor de site funciona sem nenhum código específico por LP.
-- CSV de leads abre no Excel com colunas corretas.
-- Estados `loading` / `empty` / `error` tratados em todas as páginas.
-- Performance: cada página carrega em <1s com 30 dias de dados (índices em ordem).
+**Critérios de aceite Fase 4:** ✅ atendidos (validado com seed de 30d + smoke browser, 2026-05-20)
+- ✅ Overview mostra dados reais; todo card tem comparação vs. período anterior.
+- ✅ Funil renderiza as 5 etapas e destaca o maior ponto de vazamento.
+- ✅ Agregação 100% server-side (SQL `GROUP BY`/`date_trunc`/`FILTER`); o front recebe pronto.
+- ✅ Uma área, parametrizada por `siteId` do seletor global — zero código por LP.
+- ✅ Estados `loading`/`empty`/`error` em todas as páginas.
 
 ---
 

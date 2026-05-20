@@ -13,11 +13,6 @@ _(nenhum no momento)_
 
 ## 🟠 Decisões pendentes (precisam de resposta antes de avançar a fase referenciada)
 
-### DP1. Biblioteca de gráficos no dashboard — `Fase 4`
-- Opções: `recharts` (mais conhecida, comunidade grande), `tremor` (focado em dashboards admin, monta cards prontos), `visx` (mais flexível, mais código), `chart.js` via `react-chartjs-2`.
-- **Recomendação:** `recharts` para começar (cobre 90% dos gráficos: line, bar, funnel via custom, pie). Migrar pra `tremor` se o painel crescer muito.
-- **Ação:** decidir no início da Fase 4 e registrar no changelog.
-
 ### DP2. Geolocalização do visitante — `Fase 1`
 - Opções:
   - **`geoip-lite`** (npm): banco MaxMind GeoLite2 local, custo zero, latência ~ms, precisão de país/região; precisa atualizar o DB periodicamente.
@@ -43,14 +38,11 @@ _(nenhum no momento)_
 - **Risco:** se mudar sem pensar, todo visitante recorrente vê banner de novo (atrito).
 - **Mitigação:** só incrementar versão quando o texto for materialmente diferente. Registrar mudança como `Decision` no changelog explicando o motivo.
 
-### DP6. Tratamento de bots
-- Crawlers do Google, Bing e bots maliciosos vão hidratar `tracking_sessions` ruidosas.
-- **Opções:**
-  - Filtrar UA conhecidos de bots no backend (lista crowdsourced).
-  - Adicionar flag `tracking_session.bot: boolean`.
-  - Ignorar pageviews quando `navigator.webdriver === true`.
-- **Recomendação:** combo do 1 + 2. Bot fica salvo mas excluído por padrão das queries do dashboard.
-- **Ação:** definir na Fase 1.
+### DP6. Tratamento de bots — `parcial`
+- Crawlers e bots hidratam `tracking_sessions` ruidosas.
+- **Feito:** o backend detecta bot por User-Agent na ingestão e grava `tracking_sessions.is_bot`.
+- **Pendente:** o `AnalyticsService` (Fase 4) **ainda não filtra** `is_bot` nas agregações — o dashboard inclui sessões de bot. Adicionar `WHERE is_bot = false` (e o subquery equivalente nas queries de evento) é o próximo passo. Baixo impacto enquanto o tráfego é pequeno; resolver antes de escalar.
+- **Ação:** filtrar bots no `AnalyticsService` numa próxima iteração da Fase 4.
 
 ---
 
@@ -145,7 +137,8 @@ _(nenhum no momento)_
 
 ## ✅ Resolvidos
 
-_(nenhum ainda)_
+### DP1 → CSS, não recharts `2026-05-20`
+Biblioteca de gráficos do dashboard: decidido **gráficos em CSS** (barras), sem lib externa — consistente com o painel admin existente (`dashboard`/`custos`). Ver `CHANGELOG-TRACKING.md` 2026-05-20 (Decision Fase 4).
 
 > Quando um item daqui for resolvido, **mova para esta seção** com:
 > - referência ao item original (ex.: `DP1 → recharts`),

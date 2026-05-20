@@ -29,6 +29,24 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Added (Fase 4 CONCLUÍDA — dashboard de analytics)
+**Fase/Item:** Fase 4 inteira
+**Resumo:** Área `(admin)/analytics` no `seo-blog-frontend` + endpoints `/admin/analytics` no backend. Dashboard funcional, validado com seed de 30 dias e smoke no browser.
+**Backend** (`seo-blog-backend`, branch `feat/tracking-hub-backend`): `AnalyticsService` + `AnalyticsController` no módulo `tracking` — `GET /admin/analytics/{overview,timeseries,funnel,attribution,leads}`, autenticados (JWT). Agregação 100% no Postgres (`count`, `groupBy`, `$queryRaw` com `date_trunc`/`FILTER`). `overview` retorna período atual + anterior (para o ▲▼). Seed `prisma/seed-tracking.ts` (`yarn db:seed:tracking`) — ~620 sessões, funil realista.
+**Frontend** (`seo-blog-frontend`): `app/(admin)/analytics/` com 4 telas — Visão geral (cards + gráfico sessões/dia), Funil (5 etapas, maior vazamento em vermelho), Atribuição (sessões/leads por utm_source), Leads (tabela paginada). Sub-nav, seletor 7/30/90d, item na sidebar. Estados loading/empty/error (`StateWrapper`).
+**Validado:** os 5 endpoints por curl com dados reais; as 4 telas por smoke no browser (login + screenshot) — renderizam sem erro.
+**Adiado:** tela `/analytics/eventos`, export CSV, filtro de role granular, comparativo multi-site.
+
+## 2026-05-20 — Decision (Fase 4)
+**Fase/Item:** Fase 4 / charts · resolve DP1
+**Resumo:** Gráficos do dashboard em **CSS** (barras), não `recharts`.
+**Motivo:** O painel admin (`dashboard`, `custos`) já usa mini-charts em CSS e não tem lib de gráfico. Funil, série temporal e rankings são todos barras — CSS cobre, mantém consistência e zero dependência nova. `recharts` só entra se uma visualização futura (ex.: linha suave, scatter) genuinamente exigir.
+
+## 2026-05-20 — Decision (escopo)
+**Fase/Item:** Fase 3
+**Resumo:** Fase 3 (consentimento LGPD) **adiada** a pedido do usuário; priorizada a Fase 4.
+**Motivo:** O dashboard destrava decisão comercial; o consentimento, embora importante, não bloqueia a operação atual (a LP já rodava GTM sem gating). O `consent.ts` mantém a infraestrutura pronta. Risco LGPD registrado — retomar antes de escalar tráfego pago.
+
 ## 2026-05-20 — Added (Fase 2 CONCLUÍDA — suíte E2E verde)
 **Fase/Item:** Fase 2 / validação E2E
 **Resumo:** Suíte `@playwright/test` criada na LP (`health-voice-institutional-v2/e2e/`) — **8 testes, todos verdes**. Fase 2 fechada.
