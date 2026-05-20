@@ -52,7 +52,7 @@ Isolamento: cada teste tem `sessionId` único; o `afterEach` apaga as linhas daq
 
 ## Cenários cobertos
 
-**20 testes**, incluindo caminho feliz, jornada realista, consentimento LGPD e edge cases — para dar confiança de produção.
+**21 testes**, incluindo caminho feliz, jornada realista, consentimento LGPD e edge cases — para dar confiança de produção.
 
 | Spec | Cenário | Valida |
 |---|---|---|
@@ -76,6 +76,7 @@ Isolamento: cada teste tem `sessionId` único; o `afterEach` apaga as linhas daq
 | `consent.spec.ts` | "Recusar" | `marketing=false`; analytics segue (opt-out) |
 | `consent.spec.ts` | Opt-out por padrão | analytics rastreia sem tocar no banner |
 | `consent.spec.ts` | Aceitar | GTM injetado + eventos no `dataLayer` |
+| `consent.spec.ts` | Visitante recorrente que já decidiu | banner não reaparece; GTM restaurado |
 | `consent.spec.ts` | Opt-out de analytics em `/preferencias-cookies` | tracking para de enviar |
 
 > `consent.spec.ts` **não** usa a fixture `fixtures.ts` — os demais specs usam, para pré-decidir o consentimento e o banner não cobrir a UI durante os cliques.

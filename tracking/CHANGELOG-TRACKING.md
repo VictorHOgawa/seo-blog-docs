@@ -29,6 +29,11 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Fixed (consentimento — corrida na carga inicial)
+**Fase/Item:** Fase 3 / consent.ts
+**Resumo:** `loadConsent` rodava depois dos efeitos de `<ConsentBanner>`/`<GtmLoader>` — um visitante recorrente que já havia decidido revia o banner e o GTM não era recarregado.
+**Correção:** `consent.ts` passa a carregar a decisão salva na importação do módulo (client-side), antes de qualquer efeito de componente. Novo teste E2E cobre o visitante recorrente (banner não reaparece, GTM restaurado). Suíte: 21/21 verdes.
+
 ## 2026-05-20 — Added (Fase 3 CONCLUÍDA — consentimento LGPD, modelo híbrido)
 **Fase/Item:** Fase 3 inteira
 **Resumo:** Consentimento LGPD operacional na LP, modelo **híbrido**. Suíte E2E `consent.spec.ts` — 20/20 testes verdes.
