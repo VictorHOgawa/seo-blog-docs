@@ -48,6 +48,11 @@ Exemplo:
 **Adiado / débito:** testes e2e automatizados; CORS allowlist por site (DP3); geo lookup `country`/`city` (DP2); rate-limit por `sessionId`/`siteId` (hoje por IP).
 **Próximo passo:** Fase 2 — `lib/tracking/` na LP `health-voice-institutional-v2` (branch `feat/tracking-hub-integration`).
 
+## 2026-05-20 — Decision (infra de docs)
+**Fase/Item:** processo
+**Resumo:** Os documentos vivos passam a ser versionados no repositório `seo-blog-docs` (raiz = pasta `docs/`). Cadência: commit + push ao fim de cada fase.
+**Motivo:** A raiz `seo-blog/` não é repo git, então os docs estavam fora de controle de versão. Repo dedicado isola os docs sem aninhar os repos de código. Commit-por-fase dá checkpoints estáveis com backup remoto.
+
 ## 2026-05-20 — Decision (Fase 2+)
 **Fase/Item:** Fase 2 / validação
 **Resumo:** A validação do pipeline a partir da Fase 2 será E2E automatizada via **playwright-mcp** (browser real → backend → asserção no Postgres), não só `curl`.

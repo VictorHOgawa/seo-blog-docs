@@ -82,3 +82,9 @@ Detalhe e critérios de aceite por fase em [`PLANO-TRACKING.md`](./PLANO-TRACKIN
 3. Adicionou evento novo? → adiciona em `CATALOGO-EVENTOS.md` + linha em `CHANGELOG-TRACKING.md`.
 4. Encontrou risco/dúvida? → adiciona em `PONTOS-ATENCAO-TRACKING.md`.
 5. Plugou LP nova? → revisa `PLAYBOOK-NOVA-LP.md` (algo precisou ser adaptado?) + linha no changelog.
+
+## Versionamento e cadência de commits
+
+Estes docs vivem no repositório **[`seo-blog-docs`](https://github.com/VictorHOgawa/seo-blog-docs)** (raiz = a pasta `docs/`). O código fica nos repos `seo-blog-backend`, `seo-blog-frontend` e nas LPs.
+
+**Convenção de checkpoint:** ao concluir uma fase, commitar **e dar push** — nos docs e no(s) repo(s) de código afetados. Durante a fase, commits locais livres como checkpoint; o push fecha a fase. Branches da iniciativa: `feat/tracking-hub-backend`, `feat/tracking-hub-skills` (front), `feat/tracking-hub-integration` (LP).
