@@ -29,6 +29,19 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Fixed + Added (R11 + suíte E2E expandida)
+**Fase/Item:** Fase 2 (suíte E2E) + refinamento · resolve R11
+**R11 — telefone normalizado:** `TrackingService.ingestLead` normaliza o telefone para só dígitos (`normalizePhone`) antes de gravar e de calcular o `dedupeHash`. Some a fragilidade de cada LP mandar máscara diferente. O `siteId` já fazia parte do hash → normalizar **não** impede o mesmo número em LPs diferentes (cada site é isolado). Seed ajustado para gerar telefones em dígitos. Arquivos: `tracking.util.ts`, `tracking.service.ts`, `seed-tracking.ts`.
+**Suíte E2E expandida — de 8 para 16 testes**, simulação realista + edge cases para confiança de produção:
+- jornada realista (anúncio pago → scroll → navegação → conversão; ordem temporal dos eventos);
+- visitante recorrente (mesmo `anonymousId`, sessão nova via `storageState`);
+- sessão com UA de bot → `is_bot = true`;
+- evento sobrevive ao unload sem flush explícito (`fetch` keepalive);
+- abandono de formulário (só `form_view`); validação client-side bloqueia `form_submit`; falha da API (500) → `form_error`, sem lead;
+- atribuição first-touch persiste ao navegar para página sem UTM;
+- `X-Site-Key` inválida → 401; sem PII em `properties` de evento; telefone normalizado (R11).
+**Resultado:** `npx playwright test` — 16/16 verdes.
+
 ## 2026-05-20 — Fixed (DP6 — bots excluídos das agregações)
 **Fase/Item:** Fase 4 / refinamento · resolve DP6
 **Resumo:** O `AnalyticsService` passou a **excluir sessões e eventos de bot** de todas as agregações (overview, timeseries, funil, atribuição). Subquery `session_id IN (SELECT ... WHERE is_bot = false)` nas queries de evento; `is_bot = false` direto nas de sessão. Leads ficam de fora do filtro (não têm flag; bot não preenche formulário).

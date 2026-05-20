@@ -52,16 +52,26 @@ Isolamento: cada teste tem `sessionId` único; o `afterEach` apaga as linhas daq
 
 ## Cenários cobertos
 
+**16 testes**, incluindo caminho feliz, jornada realista e edge cases — para dar confiança de produção.
+
 | Spec | Cenário | Valida |
 |---|---|---|
-| `session.spec.ts` | Primeira visita à `campaing1` | 1 `tracking_session` (device, ipHash); `page_view` em `tracking_events` |
-| `session.spec.ts` | Navegação entre páginas | novo `page_view` por rota |
+| `session.spec.ts` | Primeira visita | `tracking_session` (device, ipHash, `is_bot=false`) |
+| `session.spec.ts` | Navegação entre páginas | `page_view` por rota |
 | `session.spec.ts` | Coexistência com GTM | evento espelhado em `window.dataLayer` |
-| `cta.spec.ts` | Clique em CTA da campanha | `cta_click` com `elementId` correto e `properties` |
-| `lead.spec.ts` | Abrir modal de lead | `form_view` |
-| `lead.spec.ts` | Enviar formulário (API mockada 200) | `form_submit`; `tracking_lead`; `lead_created` com `leadId` |
-| `attribution.spec.ts` | Entrar com `?utm_*` | `tracking_attribution` com os UTMs |
-| `idempotency.spec.ts` | Replay do mesmo `eventId` (nível API) | 1 só registro |
+| `session.spec.ts` | **Visitante recorrente** | 2ª sessão reusa o `anonymousId`, gera `sessionId` novo |
+| `session.spec.ts` | **User-Agent de bot** | sessão marcada `is_bot = true` |
+| `session.spec.ts` | **Unload sem flush explícito** | evento sobrevive via `fetch` keepalive no `pagehide` |
+| `cta.spec.ts` | Clique em CTA | `cta_click` com `elementId` correto |
+| `lead.spec.ts` | Lead completo (API mockada 200) | `form_view`/`form_submit`/`lead_created` + `tracking_lead`; **telefone normalizado (R11)**; **sem PII em `properties`** |
+| `lead.spec.ts` | **Abandono do formulário** | só `form_view` — nada de `form_submit`/lead |
+| `lead.spec.ts` | **Validação client-side bloqueia** | submit inválido não dispara `form_submit` |
+| `lead.spec.ts` | **Falha da API (500)** | `form_error` dispara; nenhum lead criado |
+| `attribution.spec.ts` | Entrada com `?utm_*` | `tracking_attribution` com os UTMs |
+| `attribution.spec.ts` | **First-touch persistente** | atribuição não muda ao navegar para página sem UTM |
+| `idempotency.spec.ts` | Replay do mesmo `eventId` | 1 só registro |
+| `idempotency.spec.ts` | `X-Site-Key` inválida | rejeitada com 401 |
+| `journey.spec.ts` | **Jornada realista** anúncio pago → scroll → navegação → conversão | funil inteiro capturado, atribuição first-touch, ordem temporal dos eventos |
 
 ## Manutenção
 
