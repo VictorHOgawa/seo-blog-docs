@@ -319,29 +319,37 @@ export function getOrCreateSessionId(): string {
 }
 ```
 
-### 4.2. ConsentManager (gating LGPD)
+### 4.2. Consentimento LGPD — modelo híbrido (Fase 3)
+
+A LGPD admite mais de uma base legal. Em vez de opt-in para tudo, o tracking
+usa **bases distintas por categoria** (decisão 2026-05-20):
+
+| Categoria | Cobre | Base legal | Modelo |
+|---|---|---|---|
+| `analytics` | hub próprio (dado fica conosco, IP hasheado, storage first-party) | legítimo interesse | **opt-out** (default ligado) |
+| `marketing` | GTM / Meta / TikTok (compartilham com terceiros) | consentimento | **opt-in** (default desligado) |
 
 ```ts
-// consent.ts (resumo)
-type ConsentState = { analytics: boolean; marketing: boolean; version: string };
+// consent.ts (resumo) — duas categorias independentes
+const DEFAULTS = { analytics: true, marketing: false }; // híbrido
 
-class ConsentManager {
-  private buffer: PendingEvent[] = [];
-
-  isAllowed(category: 'analytics' | 'marketing'): boolean { /* ... */ }
-
-  enqueue(ev: PendingEvent) {
-    if (this.isAllowed('analytics')) ev.send();
-    else this.buffer.push(ev);                // segura até decisão
-  }
-
-  grant(state: ConsentState) {
-    // 1. persiste estado em localStorage
-    // 2. POST /tracking/consent
-    // 3. flush do buffer
-  }
-}
+hasAnalyticsConsent(): boolean   // default true  → hub roda já
+hasMarketingConsent(): boolean   // default false → GTM espera opt-in
+hasDecided(): boolean            // controla a exibição do banner
+setConsent({ analytics, marketing })  // persiste + notifia listeners
 ```
+
+- O **client** gateia `sendSession` / `lead` / `flush` em `hasAnalyticsConsent()`
+  e `mirrorToDataLayer` em `hasMarketingConsent()`.
+- `<GtmLoader>` injeta o GTM **só** quando `hasMarketingConsent()` vira `true`.
+- `<ConsentBanner>` é informativo (Aceitar / Recusar / Preferências) e some após
+  a decisão; `/preferencias-cookies` permite revisar/revogar a qualquer momento.
+- `client.updateConsent()` persiste, faz `POST /tracking/consent` (auditoria em
+  `tracking_consent_log`) e reage — flush se analytics foi religado, descarte da
+  fila se foi desligado.
+- Não há "buffer pré-consent" para analytics: como o default é opt-out, o hub
+  rastreia desde o primeiro hit. O represamento só ocorreria se o usuário fizer
+  opt-out — aí a fila é descartada.
 
 ### 4.3. Catálogo de eventos type-safe
 

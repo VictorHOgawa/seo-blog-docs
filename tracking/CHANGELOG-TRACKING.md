@@ -29,6 +29,23 @@ Exemplo:
 
 ---
 
+## 2026-05-20 — Added (Fase 3 CONCLUÍDA — consentimento LGPD, modelo híbrido)
+**Fase/Item:** Fase 3 inteira
+**Resumo:** Consentimento LGPD operacional na LP, modelo **híbrido**. Suíte E2E `consent.spec.ts` — 20/20 testes verdes.
+**Modelo:** `analytics` (hub próprio) = legítimo interesse → **opt-out** (roda por padrão); `marketing` (GTM/Meta/TikTok) = consentimento → **opt-in** (só após aceitar).
+**LP** (`feat/tracking-hub-integration`):
+- `consent.ts` reescrito — 2 categorias independentes, defaults `{analytics:true, marketing:false}`.
+- `client.ts` — gateia `sendSession`/`lead`/`flush` em `hasAnalyticsConsent()` e `mirrorToDataLayer` em `hasMarketingConsent()`; novo `updateConsent()` (persiste + `POST /tracking/consent` + flush/descarte).
+- `<ConsentBanner>` (Aceitar/Recusar/Preferências) e `<GtmLoader>` (injeta GTM só com opt-in de marketing) no `TrackingProvider`; GTM saiu do `layout.tsx`.
+- Página `/preferencias-cookies` com toggles para revisão/revogação.
+**Backend:** sem mudança — `POST /tracking/consent` e `tracking_consent_log` já existiam da Fase 1.
+**E2E:** `consent.spec.ts` (5 testes) + fixture `fixtures.ts` que pré-decide o consentimento nos testes que não são sobre consentimento (banner não cobre a UI). `getSessionId` passou a aguardar o client inicializar (corrige corrida).
+
+## 2026-05-20 — Decision (Fase 3)
+**Fase/Item:** Fase 3 / base legal
+**Resumo:** Consentimento adotado em modelo **híbrido** — opt-out para o hub (legítimo interesse), opt-in para pixels de marketing (consentimento).
+**Motivo:** A LGPD admite legítimo interesse como base (Art. 7, IX). Analytics first-party com IP pseudonimizado se sustenta nessa base com direito de oposição (opt-out). Pixels de terceiros (anúncio/remarketing) exigem consentimento. O híbrido mantém o dado do hub fluindo desde o 1º acesso e só os pixels esperam opt-in. **Não é parecer jurídico** — validar com compliance; a LP é de saúde (dado sensível pede cautela extra).
+
 ## 2026-05-20 — Fixed + Added (R11 + suíte E2E expandida)
 **Fase/Item:** Fase 2 (suíte E2E) + refinamento · resolve R11
 **R11 — telefone normalizado:** `TrackingService.ingestLead` normaliza o telefone para só dígitos (`normalizePhone`) antes de gravar e de calcular o `dedupeHash`. Some a fragilidade de cada LP mandar máscara diferente. O `siteId` já fazia parte do hash → normalizar **não** impede o mesmo número em LPs diferentes (cada site é isolado). Seed ajustado para gerar telefones em dígitos. Arquivos: `tracking.util.ts`, `tracking.service.ts`, `seed-tracking.ts`.

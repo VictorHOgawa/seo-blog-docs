@@ -58,8 +58,8 @@ Transformar o `seo-blog` no **hub central de tracking, atribuição e analytics*
 | 0 | Planejamento + skills/agents | ✅ Concluída |
 | 1 | Schema Prisma + módulo `tracking` no backend | ✅ Concluída (resta e2e automatizado) |
 | 2 | Cliente `lib/tracking` na LP Health Voice (piloto) | ✅ Concluída |
+| 3 | Consentimento LGPD (modelo híbrido) | ✅ Concluída |
 | 4 | Dashboard de analytics no `seo-blog-frontend` | ✅ Concluída |
-| 3 | Banner de consentimento LGPD + gating | ⏸️ Adiada (retomar antes de tráfego pago em escala) |
 | 5 | Playbook validado em segunda LP | ⬜ Pendente (próxima) |
 | 6 | Funil, atribuição multi-touch, coortes | ⬜ Pendente |
 

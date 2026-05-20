@@ -52,7 +52,7 @@ Isolamento: cada teste tem `sessionId` único; o `afterEach` apaga as linhas daq
 
 ## Cenários cobertos
 
-**16 testes**, incluindo caminho feliz, jornada realista e edge cases — para dar confiança de produção.
+**20 testes**, incluindo caminho feliz, jornada realista, consentimento LGPD e edge cases — para dar confiança de produção.
 
 | Spec | Cenário | Valida |
 |---|---|---|
@@ -72,6 +72,13 @@ Isolamento: cada teste tem `sessionId` único; o `afterEach` apaga as linhas daq
 | `idempotency.spec.ts` | Replay do mesmo `eventId` | 1 só registro |
 | `idempotency.spec.ts` | `X-Site-Key` inválida | rejeitada com 401 |
 | `journey.spec.ts` | **Jornada realista** anúncio pago → scroll → navegação → conversão | funil inteiro capturado, atribuição first-touch, ordem temporal dos eventos |
+| `consent.spec.ts` | Banner aparece e some ao decidir | decisão registrada em `tracking_consent_log` |
+| `consent.spec.ts` | "Recusar" | `marketing=false`; analytics segue (opt-out) |
+| `consent.spec.ts` | Opt-out por padrão | analytics rastreia sem tocar no banner |
+| `consent.spec.ts` | Aceitar | GTM injetado + eventos no `dataLayer` |
+| `consent.spec.ts` | Opt-out de analytics em `/preferencias-cookies` | tracking para de enviar |
+
+> `consent.spec.ts` **não** usa a fixture `fixtures.ts` — os demais specs usam, para pré-decidir o consentimento e o banner não cobrir a UI durante os cliques.
 
 ## Manutenção
 

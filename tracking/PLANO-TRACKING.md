@@ -121,25 +121,27 @@ Esses scripts viram a base reutilizável de validação de **toda LP nova** (pas
 
 ---
 
-## Fase 3 — Consentimento LGPD operacional
+## Fase 3 — Consentimento LGPD (modelo híbrido)
 
-> ⏸️ **Adiada** (decisão do usuário em 2026-05-20): priorizou-se a Fase 4 (dashboard) para destravar decisão comercial. Enquanto a Fase 3 não roda, o tracking opera **sem gating** — mesmo estado em que a LP já operava o GTM. O `consent.ts` já existe com a infraestrutura (default `granted`); a Fase 3 troca para `pending` e pluga a UI. Risco LGPD registrado — retomar antes de tráfego pago em escala.
+**Objetivo:** consentimento LGPD operacional, sem represar o dado do hub. Modelo **híbrido** (decisão de 2026-05-20):
 
-**Objetivo:** tracking nosso e GTM só rodam após consent; revogação funciona; auditoria fica em `tracking_consent_log`.
+- **Analytics (hub próprio)** → base legal = legítimo interesse → **opt-out**: roda por padrão; o usuário desativa em `/preferencias-cookies`.
+- **Marketing (GTM/Meta/TikTok — compartilham com terceiros)** → base legal = consentimento → **opt-in**: só carrega após aceitar.
 
-- [ ] `ConsentManager` no `lib/tracking/consent.ts` com buffer de eventos pré-consent
-- [ ] `<ConsentBanner />` parametrizável (texto, política link, versão)
-- [ ] `consentVersion` em env (ex.: `2026-05-19-v1`); mudar versão = pedir consent de novo
-- [ ] Gating do GTM: só carrega o script após `consent.analytics === true`
-- [ ] POST `/tracking/consent` registra cada decisão em `tracking_consent_log` (com `consentVersion`)
-- [ ] Página `/preferencias-cookies` para revisão/revogação (cookie-policy)
-- [ ] Default: pré-consent só permite "essenciais" (nenhum tracking nosso, nenhum GTM)
+- [x] `consent.ts` reescrito com 2 eixos (`analytics` default `true`, `marketing` default `false`)
+- [x] `<ConsentBanner />` informativo (Aceitar / Recusar / Preferências), aparece 1× por `consentVersion`
+- [x] `<GtmLoader />` — GTM sai do `layout.tsx` e só é injetado após consentimento de marketing
+- [x] Gating no client: `sendSession`/`lead`/`flush` respeitam `hasAnalyticsConsent()`; `mirrorToDataLayer` respeita `hasMarketingConsent()`
+- [x] `client.updateConsent()` — persiste, registra no backend (`POST /tracking/consent`) e reage (flush/descarte)
+- [x] Página `/preferencias-cookies` — revisão/revogação com toggles
+- [x] `consentVersion` por env (`NEXT_PUBLIC_TRACKING_CONSENT_VERSION`)
 
-**Critérios de aceite Fase 3:**
-- Primeira visita: nenhum POST sai antes do clique.
-- Clique em "aceitar todos": flush do buffer + 1 registro em `consent_log` + GTM carrega.
-- Clique em "rejeitar": nenhum POST de evento sai; 1 registro em `consent_log` com `false`.
-- Revogar via `/preferencias-cookies`: novo registro em `consent_log`, eventos param de sair.
+**Critérios de aceite Fase 3:** ✅ atendidos (suíte E2E `consent.spec.ts`, 2026-05-20)
+- ✅ Banner aparece na primeira visita; decidir registra linha em `tracking_consent_log`.
+- ✅ "Recusar" grava `marketing=false`; analytics segue rastreando (opt-out).
+- ✅ Sem tocar no banner, o analytics já rastreia (opt-out por padrão).
+- ✅ GTM só é injetado após "Aceitar" (opt-in de marketing).
+- ✅ Opt-out de analytics em `/preferencias-cookies` interrompe o envio de eventos.
 
 ---
 
